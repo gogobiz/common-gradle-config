@@ -1,0 +1,57 @@
+apply plugin: 'java'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
+apply plugin: 'jacoco'
+
+findbugsMain {
+	reports {
+		xml.enabled = true
+		html.enabled = false
+	}
+}
+
+pmd {
+	ruleSets =
+		[
+			"java-basic",
+			"java-braces",
+			"java-clone",
+			"java-codesize",
+			"java-controversial",
+			"java-design",
+			"java-finalizers",
+			"java-imports",
+			"java-j2ee",
+			"java-javabeans",
+			"java-junit",
+			"java-migrating",
+			"java-optimizations",
+			"java-strictexception",
+			"java-strings",
+			"java-sunsecure",
+			"java-typeresolution",
+			"java-unusedcode"
+		]
+	ignoreFailures = true
+}
+
+jacoco {
+    toolVersion = "0.7.6.201602180812"
+}
+jacocoTestReport {
+	group = "Reporting"
+	description = "Generate Jacoco coverage reports after running tests."
+    reports {
+          xml {
+            enabled true
+            destination "${buildDir}/reports/jacoco/jacoco.xml"
+          }
+          csv.enabled false
+          html {
+            enabled true
+            destination "${buildDir}/reports/jacoco/jacocoHtml"
+          }
+      }
+}
+check.dependsOn jacocoTestReport
+
