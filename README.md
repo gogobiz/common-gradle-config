@@ -2,7 +2,7 @@ This is a repo for base gradle configurations to be inherited by multiple projec
 
 Import them into your project like so:
 
-apply from: 'runway/static-analysis.gradle'
+apply from: 'https://git.gogoair.com/common/gradle-config/raw/master/base-static-analysis.gradle'
 
 
 
