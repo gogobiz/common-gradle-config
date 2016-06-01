@@ -8,6 +8,7 @@ findbugsMain {
 		xml.enabled = true
 		html.enabled = false
 	}
+	ignoreFailures = true
 }
 
 pmd {
