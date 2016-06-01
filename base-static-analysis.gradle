@@ -18,7 +18,6 @@ pmd {
 			"java-braces",
 			"java-clone",
 			"java-codesize",
-			"java-controversial",
 			"java-design",
 			"java-finalizers",
 			"java-imports",
