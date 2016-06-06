@@ -11,6 +11,14 @@ findbugsMain {
 	ignoreFailures = true
 }
 
+findbugsTest {
+	reports {
+		xml.enabled = true
+		html.enabled = false
+	}
+	ignoreFailures = true
+}
+
 pmd {
 	ruleSets =
 		[
