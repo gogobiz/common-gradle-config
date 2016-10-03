@@ -1,0 +1,14 @@
+// We need to use the defined version, otherwise default to jenkins BUILD_NUMBER
+def appVersion = ("${version}" != "unspecified") ? "${version}" : "${System.env.BUILD_NUMBER}"
+
+apply plugin: 'fpm-packaging'
+
+packaging {
+    packageName = "${System.env.JOB_NAME}"
+    baseDir = "${project.projectDir}/runway/FS_ROOT/"
+    prefix = '/opt/tomcat/webapps'
+    extraOptions = ['-v': "${appVersion}", ]
+    extraFlags   = ['--rpm-auto-add-directories']
+    filesArgs = ['.']
+    force = true
+}
