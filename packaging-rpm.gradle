@@ -6,7 +6,7 @@ apply plugin: 'fpm-packaging'
 packaging {
     packageName = "${System.env.JOB_NAME}"
     baseDir = "${project.projectDir}/runway/FS_ROOT/"
-    prefix = '/opt/tomcat/webapps'
+    prefix = '/'
     extraOptions = ['-v': "${appVersion}", ]
     extraFlags   = ['--rpm-auto-add-directories']
     filesArgs = ['.']
