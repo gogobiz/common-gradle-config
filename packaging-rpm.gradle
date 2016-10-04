@@ -7,7 +7,12 @@ packaging {
     packageName = "${System.env.JOB_NAME}"
     baseDir = "${project.projectDir}/runway/FS_ROOT/"
     prefix = '/'
-    extraOptions = ['-v': "${appVersion}", ]
+    extraOptions = [
+        '-v': "${appVersion}",
+        '--url': "${System.env.GIT_URL}",
+        '--rpm-summary': "${System.env.GIT_COMMIT}",
+        '--vendor': "${System.env.GIT_AUTHOR_EMAIL}",
+    ]
     extraFlags   = ['--rpm-auto-add-directories']
     filesArgs = ['.']
     force = true
