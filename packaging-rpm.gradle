@@ -6,6 +6,7 @@ apply plugin: 'fpm-packaging'
 packaging {
     packageName = "${System.env.JOB_NAME}"
     baseDir = "${rootDir}/runway/FS_ROOT/"
+    packageDir = new File("${rootDir}/build/linux-package")
     prefix = '/'
     extraOptions = [
         '-v': "${appVersion}",
