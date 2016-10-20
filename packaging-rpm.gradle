@@ -5,7 +5,7 @@ apply plugin: 'fpm-packaging'
 
 packaging {
     packageName = "${System.env.JOB_NAME}"
-    baseDir = "${project.projectDir}/runway/FS_ROOT/"
+    baseDir = "${rootDir}/runway/FS_ROOT/"
     prefix = '/'
     extraOptions = [
         '-v': "${appVersion}",
