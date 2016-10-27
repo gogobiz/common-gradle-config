@@ -14,7 +14,7 @@ packaging {
         '--rpm-summary': "${System.env.GIT_COMMIT}",
         '--vendor': "${System.env.GIT_AUTHOR_EMAIL}",
     ]
-    extraFlags   = ['--rpm-auto-add-directories']
+    extraFlags = []
     filesArgs = ['.']
     force = true
 }
