@@ -1,17 +1,12 @@
-This is a repo for base gradle configurations to be inherited by multiple projects
+# Gogo Gradle Configurations
 
-Import them into your project like so:
+This is a repo for base gradle configurations to be inherited by multiple
+projects. Import these configurations into your project like so:
 
+```groovy
 apply from: 'https://git.gogoair.com/common/gradle-config/raw/master/base-static-analysis.gradle'
+```
 
+Future goals:
 
-
-
-
-
-This doesn't apply to me:
-
-remote:   - how to build it
-remote:   - how to test it
-remote:   - what it interfaces with, dependencies, etc.
-remote:   - where to get more info, apis etc.
+* Upload to Gradle Plugin Repository, then make this Project Private
