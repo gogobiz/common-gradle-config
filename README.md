@@ -1,5 +1,7 @@
 # Gogo Gradle Configurations
 
+* [packaging-rpm.gradle](fpm.md)
+
 This is a repo for base gradle configurations to be inherited by multiple
 projects. Import these configurations into your project like so:
 
