@@ -33,8 +33,8 @@ gradle rpm
 
 ## Extra FPM Options
 
-The Plugin has a good set of default options. To add more options to the FPM
-command line, use the following snippet:
+[packaging-rpm.gradle](packaging-rpm.gradle) has a good set of default options.
+To add more options to the FPM command line, use the following snippet:
 
 ```gradle
 // must be *after* the "apply from: ..." statement
