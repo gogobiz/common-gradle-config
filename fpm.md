@@ -31,6 +31,14 @@ This enables the `rpm` task.
 gradle rpm
 ```
 
+## RPM Dependency Packages
+To add required dependent rpm packages you can use the following snippet:
+
+```gradle
+// must be *after* the "apply from: ..." statement
+packaging.dependencies = ['dependency_package_name', 'gcc']
+```
+
 ## Extra FPM Options
 
 [packaging-rpm.gradle](packaging-rpm.gradle) has a good set of default options.
