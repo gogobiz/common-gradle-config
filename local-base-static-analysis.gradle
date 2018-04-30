@@ -37,189 +37,212 @@ findbugsTest {
 	ignoreFailures = true
 }
 
+if (project.hasProperty('fbExcludeFilter')) {
+	println "Using FindBugs exclude filter file: $fbExcludeFilter"
+	tasks.withType(FindBugs) {
+		excludeFilter = file(fbExcludeFilter)
+	}
+}
+
 pmd {
-    toolVersion = '5.5.2'
-	ruleSets =
-		[
-			"java-basic",
-			"java-braces",
-			"java-clone",
-			"java-codesize",
-			"java-design",
-			"java-finalizers",
-			"java-imports",
-			"java-j2ee",
-			"java-javabeans",
-			"java-junit",
-			"java-migrating",
-			"java-optimizations",
-			"java-strictexception",
-			"java-strings",
-			"java-sunsecure",
-			"java-typeresolution",
-			"java-unusedcode"
-		]
+	if (project.hasProperty('pmdToolVersion')) {
+		toolVersion = pmdToolVersion
+	} else {
+		toolVersion = '5.5.2'
+	}
+
+	if (project.hasProperty('pmdRuleset')) {
+		println "Using PMD ruleset file instead of defaults: $pmdRuleset"
+		ruleSetFiles = files(pmdRuleset)
+	} else {
+		ruleSets =
+			[
+				"java-basic",
+				"java-braces",
+				"java-clone",
+				"java-codesize",
+				"java-design",
+				"java-finalizers",
+				"java-imports",
+				"java-j2ee",
+				"java-javabeans",
+				"java-junit",
+				"java-migrating",
+				"java-optimizations",
+				"java-strictexception",
+				"java-strings",
+				"java-sunsecure",
+				"java-typeresolution",
+				"java-unusedcode"
+			]
+	}
 	ignoreFailures = true
 }
 
+if (project.hasProperty('pmdExcludePaths')) {
+	println "Excluding paths from PMD analysis: $pmdExcludePaths"
+	pmdMain.exclude(pmdExcludePaths)
+	pmdTest.exclude(pmdExcludePaths)
+}
+
 jacoco {
-    toolVersion = "0.7.7.201606060606"
+	toolVersion = "0.7.7.201606060606"
 }
 jacocoTestReport {
 	group = "Reporting"
 	description = "Generate Jacoco coverage reports after running tests."
-    reports {
-          xml {
-            enabled true
-            destination "${buildDir}/reports/jacoco/main.xml"
-          }
-          csv.enabled false
-          html {
-            enabled true
-            destination "${buildDir}/reports/jacoco/jacocoHtml"
-          }
-      }
+	reports {
+		xml {
+			enabled true
+			destination "${buildDir}/reports/jacoco/main.xml"
+		}
+		csv.enabled false
+		html {
+			enabled true
+			destination "${buildDir}/reports/jacoco/jacocoHtml"
+		}
+	}
 }
 check.dependsOn jacocoTestReport
 
 // Below section does the parsing and verifications of the thresholds for findbugs, pmd, and jacoco for local builds.
 def mainSubprojects = [project(':')]
 task checkThresholds() << {
-    def reportTypes = ['main', 'test']
+	def reportTypes = ['main', 'test']
 
-    // Begin Findbugs report parsing
-    def fbErrors = 0
-    def fbWarnings = 0
-    def fbInfos = 0
+	// Begin Findbugs report parsing
+	def fbErrors = 0
+	def fbWarnings = 0
+	def fbInfos = 0
 
-    mainSubprojects.each { Project p ->
-        reportTypes.each { String type ->
-            def reportFile = file(p.projectDir.path + '/build/reports/findbugs/' + type + '.xml')
-            if (reportFile.exists()) {
-                def xmlFile = (new XmlParser()).parse(reportFile)
-                xmlFile.'FindBugsSummary'.each { issue ->
-                    def prio1Bugs = issue.attribute("priority_1")
-                    def prio2Bugs = issue.attribute("priority_2")
-                    def bugsTotal = issue.attribute("total_bugs")
-                    def prio1BugsInt = 0
-                    def prio2BugsInt = 0
-                    def bugsTotalInt = 0
+	mainSubprojects.each { Project p ->
+		reportTypes.each { String type ->
+			def reportFile = file(p.projectDir.path + '/build/reports/findbugs/' + type + '.xml')
+			if (reportFile.exists()) {
+				def xmlFile = (new XmlParser()).parse(reportFile)
+				xmlFile.'FindBugsSummary'.each { issue ->
+					def prio1Bugs = issue.attribute("priority_1")
+					def prio2Bugs = issue.attribute("priority_2")
+					def bugsTotal = issue.attribute("total_bugs")
+					def prio1BugsInt = 0
+					def prio2BugsInt = 0
+					def bugsTotalInt = 0
 
-                    if (prio1Bugs != null) {
-                        prio1BugsInt = Integer.valueOf(prio1Bugs)
-                    }
+					if (prio1Bugs != null) {
+						prio1BugsInt = Integer.valueOf(prio1Bugs)
+					}
 
-                    if (prio2Bugs != null) {
-                        prio2BugsInt = Integer.valueOf(prio2Bugs)
-                    }
+					if (prio2Bugs != null) {
+						prio2BugsInt = Integer.valueOf(prio2Bugs)
+					}
 
-                    if (bugsTotal != null) {
-                        bugsTotalInt = Integer.valueOf(bugsTotal)
-                    }
+					if (bugsTotal != null) {
+						bugsTotalInt = Integer.valueOf(bugsTotal)
+					}
 
-                    fbErrors += prio1BugsInt
-                    fbWarnings += prio2BugsInt
-                    fbInfos += bugsTotalInt - (prio1BugsInt + prio2BugsInt)
-                }
-            }
-        }
-    }
-    // End Findbugs report parsing
+					fbErrors += prio1BugsInt
+					fbWarnings += prio2BugsInt
+					fbInfos += bugsTotalInt - (prio1BugsInt + prio2BugsInt)
+				}
+			}
+		}
+	}
+	// End Findbugs report parsing
 
 
-    // Begin PMD report parsing
-    def pmdErrors = 0
-    def pmdWarnings = 0
-    def pmdInfos = 0
+	// Begin PMD report parsing
+	def pmdErrors = 0
+	def pmdWarnings = 0
+	def pmdInfos = 0
 
-    mainSubprojects.each { Project p ->
-        reportTypes.each { String type ->
-            def reportFile = file(p.projectDir.path + '/build/reports/pmd/' + type + '.xml')
-            if (reportFile.exists()) {
-                def xmlFile = (new XmlParser()).parse(reportFile)
-                xmlFile.'file'.'violation'.each { issue ->
-                    switch (issue.attribute("priority")) {
-                        case "1":
-                            pmdErrors++
-                            break;
-                        case "2":
-                            pmdWarnings++
-                            break;
-                        default:
-                            pmdInfos++
-                            break;
-                    }
-                }
-            }
-        }
-    }
-    // End PMD report parsing
-    
-    // Begin JaCoCo report parsing
-    def coverage = 0
-    def missed = 0
-    def covered = 0
+	mainSubprojects.each { Project p ->
+		reportTypes.each { String type ->
+			def reportFile = file(p.projectDir.path + '/build/reports/pmd/' + type + '.xml')
+			if (reportFile.exists()) {
+				def xmlFile = (new XmlParser()).parse(reportFile)
+				xmlFile.'file'.'violation'.each { issue ->
+					switch (issue.attribute("priority")) {
+						case "1":
+							pmdErrors++
+							break;
+						case "2":
+							pmdWarnings++
+							break;
+						default:
+							pmdInfos++
+							break;
+					}
+				}
+			}
+		}
+	}
+	// End PMD report parsing
 
-    mainSubprojects.each { Project p ->
-    	reportTypes.each { String type ->
-            def reportFile = file(p.projectDir.path + '/build/reports/jacoco/' + type + '.xml')
-            if (reportFile.exists()) {
-                def xmlFile = new XmlParser()
-                xmlFile.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false) 
+	// Begin JaCoCo report parsing
+	def coverage = 0
+	def missed = 0
+	def covered = 0
+
+	mainSubprojects.each { Project p ->
+		reportTypes.each { String type ->
+			def reportFile = file(p.projectDir.path + '/build/reports/jacoco/' + type + '.xml')
+			if (reportFile.exists()) {
+				def xmlFile = new XmlParser()
+				xmlFile.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
 				xmlFile.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 				xmlFile.parse(reportFile).'counter'.each { issue ->
-                    if(issue.attribute("type") == "INSTRUCTION"){
-                    	missed = Integer.valueOf(issue.attribute("missed"))
-                    	covered = Integer.valueOf(issue.attribute("covered"))
-                    	coverage = Math.round(((covered)/(covered + missed)) * 100)
-                    }
-                }
-            }
-        }
-    }
-    // End JaCoCo report parsing
+					if(issue.attribute("type") == "INSTRUCTION"){
+						missed = Integer.valueOf(issue.attribute("missed"))
+						covered = Integer.valueOf(issue.attribute("covered"))
+						coverage = Math.round(((covered)/(covered + missed)) * 100)
+					}
+				}
+			}
+		}
+	}
+	// End JaCoCo report parsing
 
 
-    // Print results
-    println("Static analysis results:")
-    println()
-    println(" Findbugs:")
-    println("  Errors: " + fbErrors + " (Threshold: " + findbugsErrorThreshold + ")")
-    println("  Warnings: " + fbWarnings + " (Threshold: " + findbugsWarningThreshold + ")")
-    println("  Info: " + fbInfos)
-    println()
-    println(" PMD:")
-    println("  Errors: " + pmdErrors + " (Threshold: " + pmdErrorThreshold + ")")
-    println("  Warnings: " + pmdWarnings + " (Threshold: " + pmdWarningThreshold + ")")
-    println("  Info: " + pmdInfos)
-    println()
-    println(" JaCoCo:")
-    println("  Coverage: " + coverage + " (Threshold: " + jacocoThreshold + ")")
+	// Print results
+	println("Static analysis results:")
+	println()
+	println(" Findbugs:")
+	println("  Errors: " + fbErrors + " (Threshold: " + findbugsErrorThreshold + ")")
+	println("  Warnings: " + fbWarnings + " (Threshold: " + findbugsWarningThreshold + ")")
+	println("  Info: " + fbInfos)
+	println()
+	println(" PMD:")
+	println("  Errors: " + pmdErrors + " (Threshold: " + pmdErrorThreshold + ")")
+	println("  Warnings: " + pmdWarnings + " (Threshold: " + pmdWarningThreshold + ")")
+	println("  Info: " + pmdInfos)
+	println()
+	println(" JaCoCo:")
+	println("  Coverage: " + coverage + " (Threshold: " + jacocoThreshold + ")")
 
 
-    // Fail build if Findbugs thresholds are violated
-    if (fbWarnings > Integer.valueOf(findbugsWarningThreshold)) {
-        throw new GradleException("There were findbugs warnings exceeding the warning threshold! Warnings: " + fbWarnings + " Threshold: " + findbugsWarningThreshold)
-    }
+	// Fail build if Findbugs thresholds are violated
+	if (fbWarnings > Integer.valueOf(findbugsWarningThreshold)) {
+		throw new GradleException("There were findbugs warnings exceeding the warning threshold! Warnings: " + fbWarnings + " Threshold: " + findbugsWarningThreshold)
+	}
 
-    if (fbErrors > Integer.valueOf(findbugsErrorThreshold)) {
-        throw new GradleException("There were findbugs errors exceeding the error threshold! Errors: " + fbErrors + " Threshold: " + findbugsErrorThreshold)
-    }
+	if (fbErrors > Integer.valueOf(findbugsErrorThreshold)) {
+		throw new GradleException("There were findbugs errors exceeding the error threshold! Errors: " + fbErrors + " Threshold: " + findbugsErrorThreshold)
+	}
 
 
-    // Fail build if PMD thresholds are violated
-    if (pmdWarnings > Integer.valueOf(pmdWarningThreshold)) {
-        throw new GradleException("There were pmd warnings exceeding the warning threshold! Warnings: " + pmdWarnings + " Threshold: " + pmdWarningThreshold)
-    }
+	// Fail build if PMD thresholds are violated
+	if (pmdWarnings > Integer.valueOf(pmdWarningThreshold)) {
+		throw new GradleException("There were pmd warnings exceeding the warning threshold! Warnings: " + pmdWarnings + " Threshold: " + pmdWarningThreshold)
+	}
 
-    if (pmdErrors > Integer.valueOf(pmdErrorThreshold)) {
-        throw new GradleException("There were pmd errors exceeding the error threshold! Errors: " + pmdErrors + " Threshold: " + pmdErrorThreshold)
-    }
-    
-    // Fail build if JaCoCo thresholds are violated
-    if (coverage < Double.valueOf(jacocoThreshold)) {
-        throw new GradleException("JaCoCo threshold was not met. Coverage was : " + coverage + "% Threshold is: " + jacocoThreshold)
-    }
+	if (pmdErrors > Integer.valueOf(pmdErrorThreshold)) {
+		throw new GradleException("There were pmd errors exceeding the error threshold! Errors: " + pmdErrors + " Threshold: " + pmdErrorThreshold)
+	}
+
+	// Fail build if JaCoCo thresholds are violated
+	if (coverage < Double.valueOf(jacocoThreshold)) {
+		throw new GradleException("JaCoCo threshold was not met. Coverage was : " + coverage + "% Threshold is: " + jacocoThreshold)
+	}
 }
 build.dependsOn checkThresholds
 //~~~~~~~~~~ End of Static Code Analysis ~~~~~~~~~~~~//
