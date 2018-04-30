@@ -19,49 +19,71 @@ findbugsTest {
 	ignoreFailures = true
 }
 
+if (project.hasProperty('fbExcludeFilter')) {
+	println "Using FindBugs exclude filter file: $fbExcludeFilter"
+	tasks.withType(FindBugs) {
+		excludeFilter = file(fbExcludeFilter)
+	}
+}
+
 pmd {
-    toolVersion = '5.5.2'
-	ruleSets =
-		[
-			"java-basic",
-			"java-braces",
-			"java-clone",
-			"java-codesize",
-			"java-design",
-			"java-finalizers",
-			"java-imports",
-			"java-j2ee",
-			"java-javabeans",
-			"java-junit",
-			"java-migrating",
-			"java-optimizations",
-			"java-strictexception",
-			"java-strings",
-			"java-sunsecure",
-			"java-typeresolution",
-			"java-unusedcode"
-		]
+	if (project.hasProperty('pmdToolVersion')) {
+		toolVersion = pmdToolVersion
+	} else {
+		toolVersion = '5.5.2'
+	}
+
+	if (project.hasProperty('pmdRuleset')) {
+		println "Using PMD ruleset file instead of defaults: $pmdRuleset"
+		ruleSetFiles = files(pmdRuleset)
+	} else {
+		ruleSets =
+			[
+				"java-basic",
+				"java-braces",
+				"java-clone",
+				"java-codesize",
+				"java-design",
+				"java-finalizers",
+				"java-imports",
+				"java-j2ee",
+				"java-javabeans",
+				"java-junit",
+				"java-migrating",
+				"java-optimizations",
+				"java-strictexception",
+				"java-strings",
+				"java-sunsecure",
+				"java-typeresolution",
+				"java-unusedcode"
+			]
+	}
 	ignoreFailures = true
 }
 
+if (project.hasProperty('pmdExcludePaths')) {
+	println "Excluding paths from PMD analysis: $pmdExcludePaths"
+	pmdMain.exclude(pmdExcludePaths)
+	pmdTest.exclude(pmdExcludePaths)
+}
+
 jacoco {
-    toolVersion = "0.7.7.201606060606"
+	toolVersion = "0.7.7.201606060606"
 
 }
 jacocoTestReport {
 	group = "Reporting"
 	description = "Generate Jacoco coverage reports after running tests."
-    reports {
-          xml {
-            enabled true
-            destination "${buildDir}/reports/jacoco/jacoco.xml"
-          }
-          csv.enabled false
-          html {
-            enabled true
-            destination "${buildDir}/reports/jacoco/jacocoHtml"
-          }
-      }
+	reports {
+		xml {
+			enabled true
+			destination "${buildDir}/reports/jacoco/jacoco.xml"
+		}
+		csv.enabled false
+		html {
+			enabled true
+			destination "${buildDir}/reports/jacoco/jacocoHtml"
+		}
+	}
 }
 check.dependsOn jacocoTestReport
-

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset name="Custom ruleset"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+  <description>
+    Replacement for base-static-analysis.gradle's default PMD rule sets, with exclusions for unhelpful and controversial rules. Can serve as a sample for projects that need to add/remove exclusions.
+  </description>
+
+  <exclude-pattern>.*/src/test/.*</exclude-pattern>
+
+  <rule ref="rulesets/java/basic.xml"/>
+  <rule ref="rulesets/java/braces.xml"/>
+  <rule ref="rulesets/java/clone.xml"/>
+  <rule ref="rulesets/java/codesize.xml"/>
+  <rule ref="rulesets/java/design.xml">
+      <!-- <exclude name="ConfusingTernary"/> -->
+      <!-- <exclude name="DataClass"/> -->
+      <exclude name="GodClass"/>
+  </rule>
+  <rule ref="rulesets/java/finalizers.xml"/>
+  <rule ref="rulesets/java/imports.xml"/>
+  <rule ref="rulesets/java/j2ee.xml"/>
+  <rule ref="rulesets/java/javabeans.xml">
+      <exclude name="BeanMembersShouldSerialize"/>
+  </rule>
+  <rule ref="rulesets/java/junit.xml"/>
+  <rule ref="rulesets/java/migrating.xml"/>
+  <rule ref="rulesets/java/optimizations.xml">
+      <exclude name="AvoidInstantiatingObjectsInLoops"/>
+  </rule>
+  <rule ref="rulesets/java/strictexception.xml"/>
+  <rule ref="rulesets/java/strings.xml"/>
+  <rule ref="rulesets/java/sunsecure.xml"/>
+  <rule ref="rulesets/java/typeresolution.xml"/>
+  <rule ref="rulesets/java/unusedcode.xml"/>
+</ruleset>
