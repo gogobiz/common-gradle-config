@@ -9,12 +9,18 @@ packaging {
     packageDir = new File("${rootDir}/build/linux-package")
     prefix = '/'
     extraOptions = [
-        '-v': "${appVersion}",
-        '--url': "${System.env.GIT_URL}",
-        '--rpm-summary': "${System.env.GIT_COMMIT}",
-        '--vendor': "${System.env.GIT_AUTHOR_EMAIL}",
+            '-v'           : "${appVersion}",
+            '--url'        : "${System.env.GIT_URL}",
+            '--rpm-summary': "${System.env.GIT_COMMIT}",
+            '--vendor'     : "${System.env.GIT_AUTHOR_EMAIL}",
+            '--rpm-os'     : 'linux'
     ]
-    extraFlags = []
+    // If the OPERATING_SYSTEM environment variable is present, use it as the value of the --rpm-dist flag
+    // The variable is present on Amazon Linux 2 Jenkins nodes but not on the Fedora nodes.  The Fedora
+    // RPMs don't include the dist value but the Amazon Linux RPMs are expected to have it.  This will
+    // ensure that the RPM filenames are generated correctly on both Jenkins nodes as well as possible
+    // future operating systems.
+    extraFlags = System.env.OPERATING_SYSTEM ? ["--rpm-dist", System.env.OPERATING_SYSTEM] : []
     filesArgs = ['.']
     force = true
 }
