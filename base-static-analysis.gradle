@@ -7,7 +7,9 @@ repositories {
 		url "https://plugins.gradle.org/m2/"
 	}
 }
-
+dependencies {
+	classpath "gradle.plugin.com.vanniktech:gradle-code-quality-tools-plugin:0.20.0"
+}
 findbugsMain {
 	reports {
 		xml.enabled = true
