@@ -14,12 +14,17 @@
 // You can change the threshold values to your liking.
 //~~~~~~~~~~ END OF INSTRUCTIONS ~~~~~~~~~~~//
 
+plugins {
+	id "org.sonarqube" version "3.3"
+	id "org.springframework.boot" version "2.5.3"
+	id "com.vanniktech.code.quality.tools" version "0.20.0"
+	id 'java'
+}
 
-
-apply plugin: 'java'
-apply plugin: 'findbugs'
-apply plugin: 'pmd'
-apply plugin: 'jacoco'
+//apply plugin: 'java'
+//apply plugin: 'findbugs'
+//apply plugin: 'pmd'
+//apply plugin: 'jacoco'
 
 findbugsMain {
 	reports {
