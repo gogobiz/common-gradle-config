@@ -3,10 +3,6 @@ def appVersion = ("${version}" != "unspecified") ? "${version}" : "${System.env.
 buildscript {
     repositories {
         mavenCentral()
-    }
-    dependencies {
-        classpath 'com.kenshoo:gradle-fpm:0.5'
-    }
 }
 
 apply plugin: 'fpm-packaging'
