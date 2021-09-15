@@ -8,7 +8,7 @@ buildscript {
 apply plugin: 'fpm-packaging'
 
 packaging {
-    packageName = "${System.env.JOB_NAME}"
+    packageName = System.getenv( 'JOB_NAME' ).toString()
     baseDir = "${rootDir}/runway/FS_ROOT/"
     packageDir = new File("${rootDir}/build/linux-package")
     prefix = '/'
