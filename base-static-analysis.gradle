@@ -3,14 +3,6 @@ apply plugin: 'findbugs'
 apply plugin: 'pmd'
 apply plugin: 'jacoco'
 
-repositories {
-	maven {
-		url "https://plugins.gradle.org/m2/"
-	}
-}
-dependencies {
-	classpath "gradle.plugin.com.vanniktech:gradle-code-quality-tools-plugin:0.20.0"
-}
 findbugsMain {
 	reports {
 		xml.enabled = true
@@ -46,25 +38,25 @@ pmd {
 		ruleSetFiles = files(pmdRuleset)
 	} else {
 		ruleSets =
-			[
-				"java-basic",
-				"java-braces",
-				"java-clone",
-				"java-codesize",
-				"java-design",
-				"java-finalizers",
-				"java-imports",
-				"java-j2ee",
-				"java-javabeans",
-				"java-junit",
-				"java-migrating",
-				"java-optimizations",
-				"java-strictexception",
-				"java-strings",
-				"java-sunsecure",
-				"java-typeresolution",
-				"java-unusedcode"
-			]
+				[
+						"java-basic",
+						"java-braces",
+						"java-clone",
+						"java-codesize",
+						"java-design",
+						"java-finalizers",
+						"java-imports",
+						"java-j2ee",
+						"java-javabeans",
+						"java-junit",
+						"java-migrating",
+						"java-optimizations",
+						"java-strictexception",
+						"java-strings",
+						"java-sunsecure",
+						"java-typeresolution",
+						"java-unusedcode"
+				]
 	}
 	ignoreFailures = true
 }
