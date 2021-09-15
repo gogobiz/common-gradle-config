@@ -1,5 +1,13 @@
 // We need to use the defined version, otherwise default to jenkins BUILD_NUMBER
 def appVersion = ("${version}" != "unspecified") ? "${version}" : "${System.env.BUILD_NUMBER}"
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.kenshoo:gradle-fpm:0.5'
+    }
+}
 
 apply plugin: 'fpm-packaging'
 
